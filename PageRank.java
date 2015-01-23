@@ -43,16 +43,11 @@ public class PageRank {
 
 		FileSystem fs = infile.getFileSystem(conf);
 		int noOfNodes = getNoOfNodes(infile);
-		double initialPageRank = 1.0 / (double) noOfNodes; // initialize page
-															// rank to 1 by no.
-															// of nodes for all
-															// nodes
+		double initialPageRank = 1.0 / (double) noOfNodes; // initialize page rank to 1 by no. of nodes for all nodes
 
 		OutputStream os = fs.create(in);
-		LineIterator iter = IOUtils.lineIterator(fs.open(infile), "UTF8"); // open
-																			// the
-																			// input
-																			// file
+		LineIterator iter = IOUtils.lineIterator(fs.open(infile), "UTF8"); // open the input file
+		
 		// iterate through the file and write it to another file with pageranks
 		// for each node next to nodeid
 		while (iter.hasNext()) {
@@ -68,22 +63,8 @@ public class PageRank {
 		// iterative map reduce until desired convergence is achieved
 		while (true) {
 
-			jobOutputPath = new Path(out, String.valueOf(iteration)); // set the
-																		// output
-																		// path
-																		// of
-																		// the
-																		// reduceer
-			conf.setInt(PageRankReducer.NO_OF_NODES, noOfNodes); // set the no
-																	// of nodes
-																	// in the
-																	// graph in
-																	// configuration
-																	// to be
-																	// accessed
-																	// from
-																	// reducer
-
+			jobOutputPath = new Path(out, String.valueOf(iteration)); // set the output path of the reduceer
+			conf.setInt(PageRankReducer.NO_OF_NODES, noOfNodes); // set the no in the graph in configuration to be accessed from reducer
 			Job job = Job.getInstance(conf);
 			job.setJarByClass(PageRank.class);
 			job.setMapperClass(PageRankMapper.class);
@@ -150,13 +131,9 @@ public class PageRank {
 				String line = iter.nextLine();
 				String[] parts = line.toString().split(" ");
 				if (parts.length == 1) {
-					map.put(Integer.toString(0), parts[0]); // if the node is a
-															// dangling node
-															// give it a page
-															// rank of zero
+					map.put(Integer.toString(0), parts[0]); // if the node is a dangling node give it a page rank of zero
 				} else {
-					map.put(parts[1], parts[0]); // put the value of page rank
-													// and node id in the map.
+					map.put(parts[1], parts[0]); // put the value of page rank and node id in the map.
 				}
 			}
 		}
